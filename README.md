@@ -1,54 +1,55 @@
 # pihole-dot-doh
 Official pihole docker with both DoT (DNS over TLS) and DoH (DNS over HTTPS) clients. Don't browse the web securely and yet still send your DNS queries in plain text!
 
-Built for both Raspberry Pi and AMD64.
+Built for both Raspberry Pi
 
-## PULL THE RIGHT TAG!
-* For linux/amd64 (e.g. Unraid) -> pull testdasi/pihole-dot-doh:stable-amd64
-* For linux/arm/v7 (e.g. Raspberry Pi4) -> pull testdasi/pihole-dot-doh:stable-rpi4 
-* Note that due to docker building quirks, \*-rpi4 tag shows OS/ARCH as linux/amd64 but it is actually linux/arm/v7
+BuildX
+docker buildx create --name mybuilder --use
+
+Run BuildX
+docker buildx inspect --bootstrap
 
 ## Usage:
 For docker parameters, refer to [official pihole docker readme](https://github.com/pi-hole/pi-hole). Below is an Unraid example.
 
     docker run -d \
-        --name='pihole-dot-doh' \
-        --cap-add=NET_ADMIN \
-        --restart=unless-stopped \
-        --net='bridge' \
-        -e TZ="Europe/London" \
-        -e HOST_OS="Unraid" \
-        -v '/mnt/user/appdata/pihole-dot-doh/pihole/':'/etc/pihole/':'rw' \
-        -v '/mnt/user/appdata/pihole-dot-doh/dnsmasq.d/':'/etc/dnsmasq.d/':'rw' \
-        -v '/mnt/user/appdata/pihole-dot-doh/config/':'/config':'rw' \
-        -e 'DNS1'='127.1.1.1#5153' \
-        -e 'DNS2'='127.2.2.2#5253' \
-        -e 'TZ'='Europe/London' \
-        -e 'WEBPASSWORD'='password' \
-        -e 'INTERFACE'='br0' \
-        -e 'ServerIP'='192.168.1.24' \
-        -e 'ServerIPv6'='' \
-        -e 'IPv6'='False' \
-        -e 'DNSMASQ_LISTENING'='all' \
-        -p '10053:53/tcp' \
-        -p '10053:53/udp' \
-        -p '10067:67/udp' \
-        -p '10080:80/tcp' \
-        -p '10443:443/tcp' \
-        'testdasi/pihole-dot-doh:stable-amd64'
+    --platform linux/arm/v7 \
+    --name='pihole-dot-doh' \
+    --cap-add=NET_ADMIN \
+    --restart=unless-stopped \
+    --net='bridge' \
+    -e TZ="Europe/London" \
+    -e HOST_OS="Pi4" \
+    -v '/home/docker/pihole-dot-doh/pihole/':'/etc/pihole/':'rw' \
+    -v '/home/docker/pihole-dot-doh/dnsmasq.d/':'/etc/dnsmasq.d/':'rw' \
+    -v '/home/docker/pihole-dot-doh/config/':'/config':'rw' \
+    -e 'DNS1'='127.1.1.1#5153' \
+    -e 'DNS2'='127.2.2.2#5253' \
+    -e 'TZ'='Europe/London' \
+    -e 'WEBPASSWORD'='password' \
+    -e 'INTERFACE'='br0' \
+    -e 'ServerIP'='192.168.X.X' \
+    -e 'ServerIPv6'='' \
+    -e 'IPv6'='False' \
+    -e 'DNSMASQ_LISTENING'='all' \
+    -p '53:53/tcp' \
+    -p '53:53/udp' \
+    -p '67:67/udp' \
+    -p '80:80/tcp' \
+    -p '443:443/tcp' \
+    'mrchris82/pihole-dot-dohpi4'
 
 ### Notes:
 * Remember to set pihole env DNS1 and DNS2 to use the DoH / DoT IP below. If either DNS1 or DNS2 is NOT set, Pihole will use a non-encrypted service.
   * DoH service (cloudflared) runs at 127.1.1.1#5153. Uses cloudflare (1.1.1.1 / 1.0.0.1) by default
   * DoT service (stubby) runs at 127.2.2.2#5253. Uses google (8.8.8.8 / 8.8.4.4) by default
   * To use just DoH or just DoT service, set both DNS1 and DNS2 to the same value. 
+  * 
 * In addition to the 2 official paths, you can also map container /config to expose configuration yml files for cloudflared (cloudflared.yml) and stubby (stubby.yml).
   * Edit these files to add / remove services as you wish. The flexibility is yours.
+  * 
 * Credits:
   * Pihole (buster) base image is the official [pihole/pihole:master-buster](https://hub.docker.com/r/pihole/pihole/tags?page=1&name=master-buster)
   * Cloudflared client was obtained from [official site](https://developers.cloudflare.com/argo-tunnel/downloads)
   * Stubby is a standard debian buster package
-* I code for fun and my personal uses; hence, these niche functionalties that nobody asks for. ;)
-* If you like my work, [a donation to my snacc fund](https://www.paypal.com/donate/?hosted_button_id=V6HD6XWGQBVNU) is very much appreciated.
-
-[![Donate](https://raw.githubusercontent.com/testdasi/testdasi-unraid-repo/master/donate-button-small.png)](https://www.paypal.com/donate/?hosted_button_id=V6HD6XWGQBVNU). 
+  * Folk from testdasi / https://github.com/testdasi/pihole-dot-doh / https://paypal.me/mersenne

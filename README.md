@@ -1,7 +1,7 @@
 # pihole-dot-doh
 Official pihole docker with both DoT (DNS over TLS) and DoH (DNS over HTTPS) clients. Don't browse the web securely and yet still send your DNS queries in plain text!
 
-Built for both Raspberry Pi
+Built for Raspberry Pi4, the next 2 commands were required to run the docker on arm for me.
 
 BuildX
 docker buildx create --name mybuilder --use
